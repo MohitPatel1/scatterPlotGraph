@@ -11,9 +11,15 @@ const getData = async (url) => {
 getData(url);
 
 const plottGraph = (dataSet) => {
-    let width = 0.7 * window.innerWidth;
-    let height = 0.6 * window.innerHeight;
-    let padding = 30;
+    // let width = 0.7 * window.innerWidth;
+    // let height = 0.6 * window.innerHeight;
+    let width = 800
+    let height = 500
+    let padding = 40;
+    const tooltip = d3.select("article")
+    .append('div')
+    .attr('id','tooltip')
+    .style('opacity',0)
     console.log(dataSet)
     
     dataSet.forEach(d => {
@@ -44,7 +50,6 @@ const plottGraph = (dataSet) => {
     
     graph.append("g")
     .attr("transform",`translate(0,${height-padding})`)
-    // .attr("transform",'translate(0,0)')
     .call(xAxis)
     .attr("id","x-axis")
 
@@ -53,7 +58,7 @@ const plottGraph = (dataSet) => {
     .call(yAxis)
     .attr("id","y-axis")
 
-    graph.selectAll('.dot')
+    graph.selectAll('circle')
     .data(dataSet)
     .enter()
     .append('circle')
@@ -61,9 +66,25 @@ const plottGraph = (dataSet) => {
     .attr('r',6)
     .attr('cx',d=>xScale(d.Year))
     .attr('cy',d=>yScale(d.Time))
-    // .attr('d',d=>console.log(d))
     .attr('fill',d=>`${color(d.Doping==='')}`)
+    .attr('data-xvalue',d=>(d.Year))
+    .attr('data-yvalue',d=>(d.Time))
 
-    
+    .on('mouseover',(i,d)=>{ // i is mouseEvent object
+        tooltip.style('opacity',1)
+        .style('display','flex')
+        .style('position','absolute')
+        .style('left',(xScale(d.Year)+60)+"px")
+        .style('top',yScale(d.Time)+"px")
+        .attr("data-year",d.Year)
+        .html(`Name: ${d.Name}<br>
+        Country: ${d.Nationality}<br>
+        Year: ${d.Year}<br>
+        <br>${d.Doping}`)
+    })
+    .on('mouseout',()=>{
+        tooltip.style('display','none')
+    })
+
 
 }
