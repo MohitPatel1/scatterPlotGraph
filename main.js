@@ -86,5 +86,7 @@ const plottGraph = (dataSet) => {
         tooltip.style('display','none')
     })
 
+    let legend = graph.append('g').attr('id','legend')
+
 
 }
