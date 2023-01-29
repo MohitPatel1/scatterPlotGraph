@@ -5,7 +5,7 @@ const getData = async (url) => {
     const dataSet = await dataPromise.json();
     // dataSet is single array of objects
     plottGraph(dataSet)
-
+    
 }
 
 getData(url);
@@ -15,26 +15,45 @@ const plottGraph = (dataSet) => {
     let height = 0.8 * window.innerHeight;
     let padding = 40;
     console.log(dataSet)
-
-    let xScale = d3.scaleLinear().range([0,width]) 
-    let yScale = d3.scaleLinear().range([0,height])
-
-    // const color = d3.scaleOrdinal(d3.schemeCatagory10); not working in minified version
-
-
+    
     dataSet.forEach(d => {
-        // console.log(d)
         const min_sec = d.Time.split(":")
         d.Time = new Date(1970,1,1,1,min_sec[0],min_sec[1])
     });
+    
+    const minX = d3.min(dataSet, (d) => d.Year - 1)
+    const maxX = d3.max(dataSet, (d) => d.Year + 1)
+    const minY = d3.min(dataSet, (d) => d.Time)
+    const maxY = d3.max(dataSet, (d) => d.Time)
 
-    console.log(dataSet)
-    // // x axis domain
-    // const minX = d3.min(dataSet, (d) => d.Year - 1)
-    // const maxX = d3.max(dataSet, (d) => d.Year + 1)
+    
+    let xScale = d3.scaleLinear().range([0,width]).domain([minX,maxX])
+    let yScale = d3.scaleTime().range([0, height]).domain([minY,maxY])
+    
 
-    // console.log(minX ,maxX)
+    var xAxis = d3.axisBottom(xScale);
 
-    // y axis domain
-    // const minY = 
+    var yAxis = d3.axisLeft(yScale);
+    
+    console.log(typeof(d3.format('d')))
+    console.log(minY)
+    const graph = d3.select('#graph')
+    .attr('height',height)
+    .attr('width',width)
+    .attr('transform','translate(30,30)')
+
+    graph.selectAll('.dot')
+    .data(dataSet)
+    .enter()
+    .append('circle')
+    .attr('class','dot')
+    .attr('r',6)
+    .attr('cx',d=>xScale(d.Year))
+    .attr('cy',d=>yScale(d.Time))
+    // .attr('d',d=>console.log(d))
+    .attr('fill','green')
+    
+
 }
+
+// const color = d3.scaleOrdinal(d3.schemeCatagory10); not working in minified version
