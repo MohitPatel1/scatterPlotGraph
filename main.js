@@ -26,21 +26,32 @@ const plottGraph = (dataSet) => {
     const minY = d3.min(dataSet, (d) => d.Time)
     const maxY = d3.max(dataSet, (d) => d.Time)
 
-    
-    let xScale = d3.scaleLinear().range([0,width]).domain([minX,maxX])
-    let yScale = d3.scaleTime().range([0, height]).domain([minY,maxY])
-    
+    var color = d3.scaleOrdinal(d3.schemeCategory10);
 
-    var xAxis = d3.axisBottom(xScale);
-
-    var yAxis = d3.axisLeft(yScale);
-    
-    console.log(typeof(d3.format('d')))
-    console.log(minY)
     const graph = d3.select('#graph')
+    .append("svg")
     .attr('height',height)
     .attr('width',width)
-    .attr('transform','translate(100,50)')
+    .attr('transform','translate(50,50)')
+    
+    let xScale = d3.scaleLinear().range([padding,width-padding]).domain([minX,maxX])
+    let yScale = d3.scaleTime().range([padding, height-padding]).domain([minY,maxY])
+    
+    const timeFormat = d3.timeFormat("%M:%S")
+    var xAxis = d3.axisBottom(xScale).tickFormat(d3.format("d"));
+
+    var yAxis = d3.axisLeft(yScale).tickFormat(timeFormat)
+    
+    graph.append("g")
+    .attr("transform",`translate(0,${height-padding})`)
+    // .attr("transform",'translate(0,0)')
+    .call(xAxis)
+    .attr("id","x-axis")
+
+    graph.append("g")
+    .attr("transform",`translate(${padding},0)`)
+    .call(yAxis)
+    .attr("id","y-axis")
 
     graph.selectAll('.dot')
     .data(dataSet)
@@ -51,20 +62,8 @@ const plottGraph = (dataSet) => {
     .attr('cx',d=>xScale(d.Year))
     .attr('cy',d=>yScale(d.Time))
     // .attr('d',d=>console.log(d))
-    .attr('fill','green')
+    .attr('fill',d=>`${color(d.Doping==='')}`)
 
-    graph.append("g")
-    .attr("transform",`translate(${padding},${height-padding})`)
-    // .attr("transform",'translate(0,0)')
-    .call(xAxis)
-    .attr("id","x-axis")
-
-    graph.append("g")
-    .attr("transform",`translate(${padding},-30)`)
-    .call(yAxis)
-    .attr("id","y-axis")
     
 
 }
-
-// const color = d3.scaleOrdinal(d3.schemeCatagory10); not working in minified version
