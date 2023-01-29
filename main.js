@@ -11,9 +11,9 @@ const getData = async (url) => {
 getData(url);
 
 const plottGraph = (dataSet) => {
-    let width = 0.9 * window.innerWidth;
-    let height = 0.8 * window.innerHeight;
-    let padding = 40;
+    let width = 0.7 * window.innerWidth;
+    let height = 0.6 * window.innerHeight;
+    let padding = 30;
     console.log(dataSet)
     
     dataSet.forEach(d => {
@@ -40,7 +40,7 @@ const plottGraph = (dataSet) => {
     const graph = d3.select('#graph')
     .attr('height',height)
     .attr('width',width)
-    .attr('transform','translate(30,30)')
+    .attr('transform','translate(100,50)')
 
     graph.selectAll('.dot')
     .data(dataSet)
@@ -52,6 +52,17 @@ const plottGraph = (dataSet) => {
     .attr('cy',d=>yScale(d.Time))
     // .attr('d',d=>console.log(d))
     .attr('fill','green')
+
+    graph.append("g")
+    .attr("transform",`translate(${padding},${height-padding})`)
+    // .attr("transform",'translate(0,0)')
+    .call(xAxis)
+    .attr("id","x-axis")
+
+    graph.append("g")
+    .attr("transform",`translate(${padding},-30)`)
+    .call(yAxis)
+    .attr("id","y-axis")
     
 
 }
